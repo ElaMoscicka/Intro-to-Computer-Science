@@ -49,3 +49,18 @@ def crawl_web(seed, max_pages):
             union(tocrawl, get_all_links(get_page(page)))
             crawled.append(page)
     return crawled
+
+print crawl_web("http://www.udacity.com/cs101x/index.html",1) 
+#>>> ['http://www.udacity.com/cs101x/index.html']
+
+# print crawl_web("http://www.udacity.com/cs101x/index.html",3) 
+#>>> ['http://www.udacity.com/cs101x/index.html', 
+#>>> 'http://www.udacity.com/cs101x/flying.html', 
+#>>> 'http://www.udacity.com/cs101x/walking.html']
+
+#print crawl_web("http://www.udacity.com/cs101x/index.html",500) 
+#>>> ['http://www.udacity.com/cs101x/index.html', 
+#>>> 'http://www.udacity.com/cs101x/flying.html', 
+#>>> 'http://www.udacity.com/cs101x/walking.html', 
+#>>> 'http://www.udacity.com/cs101x/crawling.html', 
+#>>> 'http://www.udacity.com/cs101x/kicking.html']
