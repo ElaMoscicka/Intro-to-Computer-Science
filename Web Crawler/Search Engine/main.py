@@ -2,11 +2,10 @@
 
 # Getting url from the Internet
 def get_page(url):
-    try:
-        import urllib
-        return urllib.urlopen(url).read()
-    except:
-        return ""
+    if url in cache:
+        return cache[url]
+    return ""
+
 
 # Returning first link and end position of the link
 def get_next_target(page):
@@ -18,11 +17,6 @@ def get_next_target(page):
     url = page[start_quote + 1:end_quote]
     return url, end_quote
 
-# Union two arrays
-def union(p,q):
-    for e in q:
-        if e not in p:
-            p.append(e)
 
 # Extracting all links from requested page
 def get_all_links(page):
@@ -36,6 +30,38 @@ def get_all_links(page):
             break
     return links
 
+
+# Union two arrays
+def union(p,q):
+    for e in q:
+        if e not in p:
+            p.append(e)
+   
+
+# splitting page into words and adds them to index
+def add_page_to_index(index,url,content):
+    words = content.split()
+    for keyword in words:
+        add_to_index(index,keyword,url)
+        
+        
+# Adding word to the index
+def add_to_index(index,keyword,url):
+    if keyword in index:
+        index[keyword].append(url)
+    else:
+        # not found, add new keyword to index
+        index[keyword] = [url]
+        
+        
+# Help function that search the index for the keyword
+def lookup(index,keyword):
+    if keyword in index:
+        return index[keyword]
+    else:
+        return None
+
+    
 # starting web crawling on a particular url
 #  url: [list of pages url links to] 
 def crawl_web(seed): # returns index, graph of outlinks
@@ -54,29 +80,6 @@ def crawl_web(seed): # returns index, graph of outlinks
             crawled.append(page)
     return index, graph
 
-
-# Adding funtions for indexing and crawled pages
-
-# Adding word to the index
-def add_to_index(index,keyword,url):
-    if keyword in index:
-        index[keyword].append(url)
-    else:
-        # not found, add new keyword to index
-        index[keyword] = [url]
-
-# Help function that search the index for the keyword
-def lookup(index,keyword):
-    if keyword in index:
-        return index[keyword]
-    else:
-        return None
-
-# splitting page into words and adds them to index
-def add_page_to_index(index,url,content):
-    words = content.split()
-    for keyword in words:
-        add_to_index(index,keyword,url)
 
 # recording cliks on a particular link
 def record_user_click(index,keyword,url):
@@ -109,6 +112,7 @@ def compute_ranks(graph):
             newranks[page] = newrank
         ranks = newranks
     return ranks
+
 
 #Using the page rankings to produce the best output(best-ranked page) for a given query
 def lucky_search(index, ranks, keyword):
@@ -163,6 +167,11 @@ and <a href="http://udacity.com/cs101x/urank/zinc.html">Zinc Chef</a>.
 </body>
 </html>
 
+
+
+
+
+
 """,
    'http://udacity.com/cs101x/urank/zinc.html': """<html>
 <body>
@@ -179,6 +188,10 @@ For great hummus, try
 </html>
 
 
+
+
+
+
 """,
    'http://udacity.com/cs101x/urank/nickel.html': """<html>
 <body>
@@ -191,6 +204,11 @@ best Hummus recipe!
 
 </body>
 </html>
+
+
+
+
+
 
 """,
    'http://udacity.com/cs101x/urank/kathleen.html': """<html>
@@ -243,16 +261,52 @@ Hummus Recipe
 </body>
 </html>
 
+
+
+
 """,
 }
+
+
 
 
 index, graph = crawl_web('http://udacity.com/cs101x/urank/index.html')
 ranks = compute_ranks(graph)
 
-print ordered_search(index, ranks, 'Hummus')
+
+#add_to_index(index,'udacity','http://udacity.com')
+#add_to_index(index,'computing','http://acm.org')
+#add_to_index(index,'udacity','http://npr.org')
+#print index
+#>>> [['udacity', ['http://udacity.com', 'http://npr.org']], 
+#>>> ['computing', ['http://acm.org']]]
+
+
+#add_page_to_index(index,'fake.text',"This is a test")
+#print index
+#>>> [['This', ['fake.text']], ['is', ['fake.text']], ['a', ['fake.text']],
+#>>> ['test',['fake.text']]]
+
+
+#print ranks
+
+
+#print lucky_search(index, ranks, 'Hummus')
+
+
+#print ordered_search(index, ranks, 'Hummus')
 #>>> ['http://udacity.com/cs101x/urank/kathleen.html',
-#    'http://udacity.com/cs101x/urank/nickel.html',
+#  'http://udacity.com/cs101x/urank/nickel.html',
 #    'http://udacity.com/cs101x/urank/arsenic.html',
 #    'http://udacity.com/cs101x/urank/hummus.html',
 #    'http://udacity.com/cs101x/urank/index.html']
+
+#print ordered_search(index, ranks, 'the')
+#>>> ['http://udacity.com/cs101x/urank/nickel.html',
+#    'http://udacity.com/cs101x/urank/arsenic.html',
+#    'http://udacity.com/cs101x/urank/hummus.html',
+#    'http://udacity.com/cs101x/urank/index.html']
+
+
+#print ordered_search(index, ranks, 'babaganoush')
+#>>> None
