@@ -116,7 +116,7 @@ def compute_ranks(graph):
 
 #Using the page rankings to produce the best output(best-ranked page) for a given query
 def lucky_search(index, ranks, keyword):
-    return_url = '';
+    return_url = ''
     if keyword not in index:
         return None
     for url in index[keyword]:
